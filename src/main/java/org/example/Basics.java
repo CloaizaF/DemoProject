@@ -1,7 +1,7 @@
 package org.example;
 
 import io.restassured.RestAssured;
-import files.payload;
+import files.Payload;
 import io.restassured.path.json.JsonPath;
 import org.testng.Assert;
 
@@ -17,7 +17,7 @@ public class Basics {
         //Validate if AddPlace API is working as expected
         RestAssured.baseURI = "https://rahulshettyacademy.com";
         String addPlaceResponse = given().log().all().queryParam("key", "qaclick123").
-                header("Content-Type", "application/json").body(payload.getAddPlacePayload())
+                header("Content-Type", "application/json").body(Payload.getAddPlacePayload())
                 .when().post("maps/api/place/add/json")
                 .then().log().all().assertThat().statusCode(200).body("scope", equalTo("APP"))
                 .header("server", "Apache/2.4.52 (Ubuntu)").extract().response().asString();
@@ -30,7 +30,7 @@ public class Basics {
 
         //Validate if UpdatePlace API is working as expected
         given().log().all().queryParam("key", "qaclick123").header("Content-Type", "application/json")
-                .body(payload.getUpdatePlacePayload(placeId, newAddress))
+                .body(Payload.getUpdatePlacePayload(placeId, newAddress))
                 .when().put("maps/api/place/update/json")
                 .then().log().all().assertThat().statusCode(200).body("msg", equalTo("Address successfully updated"));
 
