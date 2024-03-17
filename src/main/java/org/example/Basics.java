@@ -5,6 +5,10 @@ import files.Payload;
 import io.restassured.path.json.JsonPath;
 import org.testng.Assert;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -12,7 +16,7 @@ import static org.hamcrest.Matchers.equalTo;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Basics {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         //Validate if AddPlace API is working as expected
         RestAssured.baseURI = "https://rahulshettyacademy.com";
@@ -46,6 +50,18 @@ public class Basics {
         //JUnit, TestNG
         Assert.assertEquals(newAddress, actualAddress);
 
+        //Getting the payload from a static file
+        String addPlaceJsonPayload = new String(Files.readAllBytes(Paths.get("C:\\Users\\loaiz\\IdeaProjects\\DemoProject\\src\\main\\java\\files\\addPlacePayload.json")));
+        String addPlaceResponseStatic = given().log().all().queryParam("key", "qaclick123")
+                .header("Content-Type", "application/json")
+                .body(addPlaceJsonPayload)
+                .when().post("maps/api/place/add/json")
+                .then().log().all().assertThat().statusCode(200).body("scope", equalTo("APP"))
+                .header("server", "Apache/2.4.52 (Ubuntu)").extract().response().asString();
+
+        JsonPath jsonAddPlaceResponseStatic = new JsonPath(addPlaceResponseStatic);
+        String placeIdStatic = jsonAddPlaceResponseStatic.getString("place_id");
+        System.out.printf("Place_id of add place request with static json: %s", placeIdStatic);
 
     }
 }
